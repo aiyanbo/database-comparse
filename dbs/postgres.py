@@ -16,12 +16,9 @@ def get_table_infos(properties, db, table_names) -> dict:
     tables = {}
     try:
         for table_name in table_names:
-            cursor.execute(f"SELECT count(id) FROM {table_name}")
-            count = cursor.fetchone()
-            cursor.execute(f"SELECT max(id) FROM {table_name}")
-            max_id = cursor.fetchone()
-            cursor.execute(f"SELECT last_value FROM {table_name}_id_seq")
-            seq = cursor.fetchone()
+            count = safely_execute(conn, cursor, f"SELECT count(id) FROM {table_name}")
+            max_id = safely_execute(conn, cursor, f"SELECT max(id) FROM {table_name}")
+            seq = safely_execute(conn, cursor, f"SELECT last_value FROM {table_name}_id_seq")
             tables[table_name] = {"count": count, "max": max_id, "seq": seq}
         return tables
     except RuntimeError as e:
@@ -44,6 +41,16 @@ def get_compare_tables(properties, db) -> list:
     finally:
         cursor.close()
         conn.close()
+
+
+def safely_execute(conn, cursor, query):
+    try:
+        cursor.execute(query)
+        return cursor.fetchone()[0]
+    except Exception as e:
+        logging.exception("Execute query failed.")
+        conn.rollback()
+        return "undefined"
 
 
 def get_connection(properties, dbname):

@@ -22,7 +22,7 @@ def get_config(file) -> dict:
 def render(left, right) -> str:
     if left == right:
         return "-"
-    return f"left: {left} | right: {right}"
+    return f"left: {left} :x: right: {right}"
 
 
 def print_result(db, result) -> None:
