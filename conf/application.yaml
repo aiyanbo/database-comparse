@@ -1,0 +1,13 @@
+postgres:
+  left:
+    host: "localhost"
+    port: 5432
+    user: "postgres"
+    password: "postgres"
+  right:
+    host: "localhost"
+    port: 5432
+    user: "postgres"
+    password: "postgres"
+  databases:
+    - postgres
